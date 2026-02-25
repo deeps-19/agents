@@ -4,26 +4,17 @@ const Client = require("../models/Client");
 // Create Investment under a client
 exports.createInvestment = async (req, res) => {
   try {
-    const { clientId } = req.params;
-
-    // Verify client belongs to agent
-    const client = await Client.findOne({
-      _id: clientId,
-      agentId: req.agent.id
-    });
-
-    if (!client)
-      return res.status(404).json({ message: "Client not found" });
-
     const investment = await Investment.create({
       ...req.body,
-      clientId
+      clientId: req.params.clientId,
+      agentId: req.agent.id
     });
 
     res.status(201).json(investment);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+};
 };
 exports.updateInvestment = async (req, res) => {
   try {

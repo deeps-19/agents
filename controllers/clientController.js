@@ -24,3 +24,21 @@ exports.getClients = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Get Single Client
+exports.getClientById = async (req, res) => {
+  try {
+    const client = await Client.findOne({
+      _id: req.params.id,
+      agentId: req.agent.id
+    });
+
+    if (!client) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+
+    res.json(client);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
