@@ -17,4 +17,5 @@ router.get("/:clientId", getInvestments);
 router.put("/update/:id", updateInvestment);
 router.delete("/delete/:id", deleteInvestment);
 router.put("/mark-paid/:id", markAsPaid);
+router.get("/single/:id", auth, investmentController.getSingleInvestment);
 module.exports = router;

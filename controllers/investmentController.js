@@ -116,3 +116,12 @@ exports.markAsPaid = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.getSingleInvestment = async (req, res) => {
+  const investment = await Investment.findOne({
+    _id: req.params.id,
+    agentId: req.agent.id
+  });
+
+  res.json(investment);
+};
