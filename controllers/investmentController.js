@@ -122,6 +122,5 @@ exports.getSingleInvestment = async (req, res) => {
     _id: req.params.id,
     agentId: req.agent.id
   });
-  console.log(investment)
   res.json(investment);
 };
