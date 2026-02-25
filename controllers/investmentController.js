@@ -15,7 +15,7 @@ exports.createInvestment = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-};
+
 exports.updateInvestment = async (req, res) => {
   try {
     const { id } = req.params;
