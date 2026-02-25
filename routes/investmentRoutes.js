@@ -6,7 +6,8 @@ const {
   getInvestments,
     updateInvestment,
   deleteInvestment,
-  markAsPaid
+  markAsPaid,
+  getSingleInvestment
 
 } = require("../controllers/investmentController");
 
@@ -17,5 +18,5 @@ router.get("/:clientId", getInvestments);
 router.put("/update/:id", updateInvestment);
 router.delete("/delete/:id", deleteInvestment);
 router.put("/mark-paid/:id", markAsPaid);
-router.get("/single/:id", authMiddleware, investmentController.getSingleInvestment);
+router.get("/single/:id", authMiddleware, getSingleInvestment);
 module.exports = router;
