@@ -1,60 +1,81 @@
 const mongoose = require("mongoose");
 
 const investmentSchema = new mongoose.Schema(
-  {
-    clientId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Client",
-      required: true
-    },
-
+{
+    // Agent who created this investment
     agentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Agent",
-      required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Agent",      // or "Agent" if you have a separate Agent model
+        required: true,
+        index: true
     },
 
-    company: {
-      type: String,
-      required: true
+    clientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Client",
+        required: true
     },
 
-    type: {
-      type: String, // LIC / Post / Goshala / Mutual Fund
-      required: true
+    investmentType: {
+        type: String,
+        enum: [
+            "LIC",
+            "Post Office",
+            "Mutual Fund",
+            "HDFC Life",
+            "General Insurance",
+            "Health Insurance"
+        ],
+        required: true
     },
 
-    accountNo: String,   // previously policyNumber
-    receiptNo: String,
-
-    premium: {
-      type: Number,
-      required: true
+    companyName: {
+        type: String,
+        required: true
     },
 
-    openingDate: Date,
+    policyNumber: {
+        type: String,
+        required: true,
+        unique: true
+    },
 
-    dueDate: {
-      type: Date,
-      required: true
+    planName: String,
+
+    nominee: String,
+
+    premiumAmount: {
+        type: Number,
+        required: true
     },
 
     frequency: {
-      type: String,
-      enum: ["Monthly", "Quarterly", "Half-Yearly", "Yearly"],
-      default: "Yearly"
+        type: String,
+        enum: ["Monthly", "Quarterly", "Half Yearly", "Yearly"],
+        default: "Yearly"
     },
 
     status: {
-      type: String,
-      enum: ["Due", "Paid"],
-      default: "Due"
+        type: String,
+        enum: ["Active", "Closed", "Lapsed"],
+        default: "Active"
     },
 
-    lastReminder: Date,
-    lastPaidDate: Date
-  },
-  { timestamps: true }
-);
+    startDate: Date,
+
+    nextPremiumDate: Date,
+
+    maturityDate: Date,
+
+    remarks: String,
+    lastReminder: {
+    type: Date,
+    default: null,
+},
+
+},
+{
+    timestamps: true
+});
 
 module.exports = mongoose.model("Investment", investmentSchema);

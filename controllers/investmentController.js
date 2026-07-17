@@ -1,126 +1,199 @@
 const Investment = require("../models/Investment");
-const Client = require("../models/Client");
 
-// Create Investment under a client
+// Create Investment
 exports.createInvestment = async (req, res) => {
   try {
     const investment = await Investment.create({
       ...req.body,
-      clientId: req.params.clientId,
-      agentId: req.agent.id
+      agentId: req.agent._id, // Logged-in Agent ID
     });
 
-    res.status(201).json(investment);
+    res.status(201).json({
+      success: true,
+      message: "Investment Added Successfully",
+      investment,
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
+// Get All Investments of Logged-in Agent
+exports.getInvestments = async (req, res) => {
+  try {
+    const data = await Investment.find({
+      agentId: req.agent._id,
+    })
+      .populate("clientId")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// Get Single Investment
+exports.getInvestment = async (req, res) => {
+  try {
+    const investment = await Investment.findOne({
+      _id: req.params.id,
+      agentId: req.agent._id,
+    }).populate("clientId");
+
+    if (!investment) {
+      return res.status(404).json({
+        success: false,
+        message: "Investment Not Found",
+      });
+    }
+
+    res.json({
+      success: true,
+      investment,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// Update Investment
 exports.updateInvestment = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const investment = await Investment.findById(id).populate("clientId");
-
-    if (!investment)
-      return res.status(404).json({ message: "Investment not found" });
-
-    // Check if this investment belongs to logged-in agent
-    if (investment.clientId.agentId.toString() !== req.agent.id)
-      return res.status(403).json({ message: "Unauthorized" });
-
-    const updated = await Investment.findByIdAndUpdate(
-      id,
+    const investment = await Investment.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        agentId: req.agent._id,
+      },
       req.body,
       { new: true }
     );
 
-    res.json(updated);
-
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-exports.deleteInvestment = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const investment = await Investment.findById(id).populate("clientId");
-
-    if (!investment)
-      return res.status(404).json({ message: "Investment not found" });
-
-    // Security check
-    if (investment.clientId.agentId.toString() !== req.agent.id)
-      return res.status(403).json({ message: "Unauthorized" });
-
-    await Investment.findByIdAndDelete(id);
-
-    res.json({ message: "Investment deleted successfully" });
-
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-// Get investments for a client
-exports.getInvestments = async (req, res) => {
-  try {
-    const { clientId } = req.params;
-
-    const investments = await Investment.find({ clientId });
-
-    res.json(investments);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-
-exports.markAsPaid = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const investment = await Investment.findById(id).populate("clientId");
-
-    if (!investment)
-      return res.status(404).json({ message: "Investment not found" });
-
-    // Security check
-    if (investment.clientId.agentId.toString() !== req.agent.id)
-      return res.status(403).json({ message: "Unauthorized" });
-
-    const today = new Date();
-
-    // Calculate next due date
-    let nextDueDate = new Date(investment.dueDate);
-
-    if (investment.frequency === "Monthly") {
-      nextDueDate.setMonth(nextDueDate.getMonth() + 1);
-    } else if (investment.frequency === "Yearly") {
-      nextDueDate.setFullYear(nextDueDate.getFullYear() + 1);
+    if (!investment) {
+      return res.status(404).json({
+        success: false,
+        message: "Investment Not Found",
+      });
     }
 
-    investment.lastPaidDate = today;
-    investment.dueDate = nextDueDate;
-    investment.status = "Due";
-    investment.lastReminder = null;
-
-    await investment.save();
-
     res.json({
-      message: "Marked as paid. Next due date updated.",
-      investment
+      success: true,
+      message: "Investment Updated",
+      investment,
     });
-
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
-exports.getSingleInvestment = async (req, res) => {
-  const investment = await Investment.findOne({
-    _id: req.params.id,
-    agentId: req.agent.id
-  });
-  res.json(investment);
+// Delete Investment
+exports.deleteInvestment = async (req, res) => {
+  try {
+    const investment = await Investment.findOneAndDelete({
+      _id: req.params.id,
+      agentId: req.agent._id,
+    });
+
+    if (!investment) {
+      return res.status(404).json({
+        success: false,
+        message: "Investment Not Found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Investment Deleted",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// Client Wise Investments
+exports.getClientInvestments = async (req, res) => {
+  try {
+    const data = await Investment.find({
+      clientId: req.params.clientId,
+      agentId: req.agent._id,
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// Logged-in Agent Investments
+exports.getMyInvestments = async (req, res) => {
+  try {
+    const investments = await Investment.find({
+      agentId: req.agent._id,
+    })
+      .populate("clientId")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: investments,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// Upcoming Premiums
+exports.upcomingPremiums = async (req, res) => {
+  try {
+    const today = new Date();
+
+    const seven = new Date();
+    seven.setDate(today.getDate() + 7);
+
+    const data = await Investment.find({
+      agentId: req.agent._id,
+      status: "Active",
+      nextPremiumDate: {
+        $gte: today,
+        $lte: seven,
+      },
+    }).populate("clientId");
+
+    res.json({
+      success: true,
+      data,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 };
