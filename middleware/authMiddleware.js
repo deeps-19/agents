@@ -10,6 +10,7 @@ module.exports = function (req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded Token:", decoded);
     req.agent = decoded;
     next();
   } catch (err) {

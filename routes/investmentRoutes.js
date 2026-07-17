@@ -4,19 +4,19 @@ const router=express.Router();
 
 const investment=require("../controllers/investmentController");
 
-router.post("/",investment.createInvestment);
+router.post("/", authMiddleware, investment.createInvestment);
 
-router.get("/",investment.getInvestments);
+router.get("/", authMiddleware, investment.getInvestments);
 
-router.get("/upcoming",investment.upcomingPremiums);
+router.get("/upcoming", authMiddleware, investment.upcomingPremiums);
 
-router.get("/client/:clientId",investment.getClientInvestments);
+router.get("/client/:clientId", authMiddleware, investment.getClientInvestments);
 
-router.get("/:id",investment.getInvestment);
+router.get("/:id", authMiddleware, investment.getInvestment);
 
-router.put("/:id",investment.updateInvestment);
+router.put("/:id", authMiddleware, investment.updateInvestment);
 
-router.delete("/:id",investment.deleteInvestment);
+router.delete("/:id", authMiddleware, investment.deleteInvestment);
 router.get("/my", authMiddleware, investment.getMyInvestments);
 
 module.exports=router;
