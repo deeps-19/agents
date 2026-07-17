@@ -5,7 +5,7 @@ exports.createInvestment = async (req, res) => {
   try {
     const investment = await Investment.create({
       ...req.body,
-      agentId: req.agent._id, // Logged-in Agent ID
+      agentId: req.agent.id, // Logged-in Agent ID
     });
 
     res.status(201).json({
@@ -28,7 +28,7 @@ exports.createInvestment = async (req, res) => {
 exports.getInvestments = async (req, res) => {
   try {
     const data = await Investment.find({
-      agentId: req.agent._id,
+      agentId: req.agent.id,
     })
       .populate("clientId")
       .sort({ createdAt: -1 });
@@ -50,7 +50,7 @@ exports.getInvestment = async (req, res) => {
   try {
     const investment = await Investment.findOne({
       _id: req.params.id,
-      agentId: req.agent._id,
+      agentId: req.agent.id,
     }).populate("clientId");
 
     if (!investment) {
@@ -78,7 +78,7 @@ exports.updateInvestment = async (req, res) => {
     const investment = await Investment.findOneAndUpdate(
       {
         _id: req.params.id,
-        agentId: req.agent._id,
+        agentId: req.agent.id,
       },
       req.body,
       { new: true }
@@ -109,7 +109,7 @@ exports.deleteInvestment = async (req, res) => {
   try {
     const investment = await Investment.findOneAndDelete({
       _id: req.params.id,
-      agentId: req.agent._id,
+      agentId: req.agent.id,
     });
 
     if (!investment) {
@@ -136,7 +136,7 @@ exports.getClientInvestments = async (req, res) => {
   try {
     const data = await Investment.find({
       clientId: req.params.clientId,
-      agentId: req.agent._id,
+      agentId: req.agent.id,
     }).sort({ createdAt: -1 });
 
     res.json({
@@ -155,7 +155,7 @@ exports.getClientInvestments = async (req, res) => {
 exports.getMyInvestments = async (req, res) => {
   try {
     const investments = await Investment.find({
-      agentId: req.agent._id,
+      agentId: req.agent.id,
     })
       .populate("clientId")
       .sort({ createdAt: -1 });
@@ -181,7 +181,7 @@ exports.upcomingPremiums = async (req, res) => {
     seven.setDate(today.getDate() + 7);
 
     const data = await Investment.find({
-      agentId: req.agent._id,
+      agentId: req.agent.id,
       status: "Active",
       nextPremiumDate: {
         $gte: today,
