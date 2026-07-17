@@ -2,6 +2,8 @@ const Investment = require("../models/Investment");
 
 // Create Investment
 exports.createInvestment = async (req, res) => {
+  console.log(req.agent);
+  
   try {
     const investment = await Investment.create({
       ...req.body,
