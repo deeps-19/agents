@@ -15,11 +15,12 @@ exports.createInvestment = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({
-      console.log(err);
+     
       
       success: false,
       message: err.message,
     });
+    console.log(err)
   }
 };
 
