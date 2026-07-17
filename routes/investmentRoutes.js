@@ -17,6 +17,6 @@ router.get("/:id",investment.getInvestment);
 router.put("/:id",investment.updateInvestment);
 
 router.delete("/:id",investment.deleteInvestment);
-router.get("/my", authMiddleware, investmentController.getMyInvestments);
+router.get("/my", authMiddleware, investment.getMyInvestments);
 
 module.exports=router;
