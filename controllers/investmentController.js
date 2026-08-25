@@ -9,6 +9,7 @@ exports.createInvestment = async (req, res) => {
     const {
       clientId,
       investmentType,
+      policyNumber,
     } = req.body;
 
     if (!clientId) {
@@ -25,43 +26,16 @@ exports.createInvestment = async (req, res) => {
       });
     }
 
-    // Check client
-    const client = await Client.findById(clientId);
-
-    if (!client) {
-      return res.status(404).json({
-        success: false,
-        message: "Client not found",
+    // Check duplicate LIC policy number
+    if (investmentType === "LIC" && policyNumber) {
+      const existingPolicy = await Investment.findOne({
+        policyNumber: policyNumber.trim(),
       });
-    }
 
-    // LIC validation
-    if (investmentType === "LIC") {
-      if (!req.body.policyNumber) {
-        return res.status(400).json({
+      if (existingPolicy) {
+        return res.status(409).json({
           success: false,
-          message: "Policy number is required",
-        });
-      }
-
-      if (!req.body.planName) {
-        return res.status(400).json({
-          success: false,
-          message: "LIC plan name is required",
-        });
-      }
-
-      if (!req.body.sumAssured) {
-        return res.status(400).json({
-          success: false,
-          message: "Sum assured is required",
-        });
-      }
-
-      if (!req.body.annualPremium) {
-        return res.status(400).json({
-          success: false,
-          message: "Annual premium is required",
+          message: `LIC policy number ${policyNumber} already exists.`,
         });
       }
     }
@@ -76,6 +50,16 @@ exports.createInvestment = async (req, res) => {
 
   } catch (error) {
     console.error("Create Investment Error:", error);
+
+    // Handle MongoDB duplicate key as well
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "This policy number already exists.",
+        field: Object.keys(error.keyPattern || {})[0],
+        value: Object.values(error.keyValue || {})[0],
+      });
+    }
 
     return res.status(500).json({
       success: false,
