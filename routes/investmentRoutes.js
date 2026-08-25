@@ -5,45 +5,31 @@ const router = express.Router();
 const {
   createInvestment,
   getInvestment,
-  updateInvestment,
   getClientInvestments,
+  updateInvestment,
   deleteInvestment,
 } = require("../controllers/investmentController");
 
+router.post("/", createInvestment);
 
-// Create investment
-router.post(
-  "/",
-  createInvestment
-);
-
-
-// Get single investment
 router.get(
   "/single/:id",
   getInvestment
 );
 
-
-// Get all investments of client
 router.get(
   "/client/:clientId",
   getClientInvestments
 );
 
-
-// Update investment
 router.put(
   "/:id",
   updateInvestment
 );
 
-
-// Delete investment
 router.delete(
-  "/:id",
+  "/delete/:id",
   deleteInvestment
 );
-
 
 module.exports = router;
