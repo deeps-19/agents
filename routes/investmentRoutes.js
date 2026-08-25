@@ -1,22 +1,49 @@
-const express=require("express");
-const authMiddleware = require("../middleware/authMiddleware")
-const router=express.Router();
+const express = require("express");
 
-const investment=require("../controllers/investmentController");
+const router = express.Router();
 
-router.post("/", authMiddleware, investment.createInvestment);
+const {
+  createInvestment,
+  getInvestment,
+  updateInvestment,
+  getClientInvestments,
+  deleteInvestment,
+} = require("../controllers/investmentController");
 
-router.get("/", authMiddleware, investment.getInvestments);
 
-router.get("/upcoming", authMiddleware, investment.upcomingPremiums);
+// Create investment
+router.post(
+  "/",
+  createInvestment
+);
 
-router.get("/client/:clientId", authMiddleware, investment.getClientInvestments);
 
-router.get("/:id", authMiddleware, investment.getInvestment);
+// Get single investment
+router.get(
+  "/single/:id",
+  getInvestment
+);
 
-router.put("/:id", authMiddleware, investment.updateInvestment);
 
-router.delete("/:id", authMiddleware, investment.deleteInvestment);
-router.get("/my", authMiddleware, investment.getMyInvestments);
+// Get all investments of client
+router.get(
+  "/client/:clientId",
+  getClientInvestments
+);
 
-module.exports=router;
+
+// Update investment
+router.put(
+  "/:id",
+  updateInvestment
+);
+
+
+// Delete investment
+router.delete(
+  "/:id",
+  deleteInvestment
+);
+
+
+module.exports = router;

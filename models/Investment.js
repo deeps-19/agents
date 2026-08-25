@@ -1,81 +1,164 @@
 const mongoose = require("mongoose");
 
 const investmentSchema = new mongoose.Schema(
-{
-    // Agent who created this investment
-    agentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Agent",      // or "Agent" if you have a separate Agent model
-        required: true,
-        index: true
-    },
-
+  {
     clientId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Client",
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Client",
+      required: true,
     },
 
     investmentType: {
-        type: String,
-        enum: [
-            "LIC",
-            "Post Office",
-            "Mutual Fund",
-            "HDFC Life",
-            "General Insurance",
-            "Health Insurance"
-        ],
-        required: true
+      type: String,
+      required: true,
+      enum: [
+        "LIC",
+        "Post Office",
+        "Mutual Fund",
+        "HDFC Life",
+        "General Insurance",
+        "Health Insurance",
+      ],
     },
 
-    companyName: {
-        type: String,
-        required: true
-    },
+    // =========================
+    // LIC DETAILS
+    // =========================
 
     policyNumber: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      trim: true,
     },
 
-    planName: String,
-
-    nominee: String,
-
-    premiumAmount: {
-        type: Number,
-        required: true
+    planName: {
+      type: String,
+      trim: true,
     },
 
-    frequency: {
-        type: String,
-        enum: ["Monthly", "Quarterly", "Half Yearly", "Yearly"],
-        default: "Yearly"
+    planType: {
+      type: String,
+      enum: [
+        "Endowment",
+        "Term",
+        "ULIP",
+        "Money Back",
+      ],
     },
 
-    status: {
-        type: String,
-        enum: ["Active", "Closed", "Lapsed"],
-        default: "Active"
+    policyStatus: {
+      type: String,
+      enum: [
+        "Active",
+        "Paid Up",
+        "Lapsed",
+        "Matured",
+      ],
+      default: "Active",
     },
 
-    startDate: Date,
+    // =========================
+    // POLICY HOLDER
+    // =========================
 
-    nextPremiumDate: Date,
+    policyHolderName: {
+      type: String,
+      trim: true,
+    },
 
-    maturityDate: Date,
+    nomineeName: {
+      type: String,
+      trim: true,
+    },
 
-    remarks: String,
-    lastReminder: {
-    type: Date,
-    default: null,
-},
+    nomineeRelationship: {
+      type: String,
+      enum: [
+        "Spouse",
+        "Child",
+        "Parent",
+        "Sibling",
+        "Other",
+      ],
+    },
 
-},
-{
-    timestamps: true
-});
+    appointeeName: {
+      type: String,
+      trim: true,
+    },
 
-module.exports = mongoose.model("Investment", investmentSchema);
+    // =========================
+    // PREMIUM DETAILS
+    // =========================
+
+    sumAssured: {
+      type: Number,
+      min: 0,
+    },
+
+    annualPremium: {
+      type: Number,
+      min: 0,
+    },
+
+    premiumPayingTerm: {
+      type: Number,
+      min: 0,
+    },
+
+    policyTerm: {
+      type: Number,
+      min: 0,
+    },
+
+    premiumFrequency: {
+      type: String,
+      enum: [
+        "Monthly",
+        "Quarterly",
+        "Half-Yearly",
+        "Yearly",
+      ],
+    },
+
+    modeOfPayment: {
+      type: String,
+      enum: [
+        "UPI / Net Banking",
+        "Cash / Cheque",
+        "Direct Debit (NACH)",
+      ],
+    },
+
+    // =========================
+    // IMPORTANT DATES
+    // =========================
+
+    policyCommencement: {
+      type: Date,
+    },
+
+    riskCommencement: {
+      type: Date,
+    },
+
+    nextPremiumDue: {
+      type: Date,
+    },
+
+    lastPremiumPaid: {
+      type: Date,
+    },
+
+    maturityDate: {
+      type: Date,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model(
+  "Investment",
+  investmentSchema
+);
