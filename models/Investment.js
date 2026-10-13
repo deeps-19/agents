@@ -9,12 +9,12 @@ const investmentSchema = new mongoose.Schema(
     clientId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Client",
-      required: true,
+      
     },
 
     investmentType: {
       type: String,
-      required: true,
+      
       enum: [
         "LIC",
         "Post Office",
