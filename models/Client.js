@@ -4,13 +4,11 @@ const clientSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
-      required: true,
       trim: true,
     },
 
     dob: {
       type: Date,
-      required: true,
     },
 
     gender: {
@@ -21,13 +19,11 @@ const clientSchema = new mongoose.Schema(
 
     mobile: {
       type: String,
-      required: true,
       unique: true,
     },
 
     email: {
       type: String,
-      required: true,
       lowercase: true,
       unique: true,
     },
